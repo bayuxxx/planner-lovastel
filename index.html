@@ -106,8 +106,23 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Jam</label>
+                    <input type="time" id="inputJam" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" required>
+                </div>
+                <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2">Lokasi</label>
                     <input type="text" id="inputLocation" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">No. WhatsApp</label>
+                    <input type="tel" id="inputWA" placeholder="081234567890" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Status Invoice</label>
+                    <select id="inputInvoice" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition">
+                        <option value="belum">Belum Lunas</option>
+                        <option value="lunas">Lunas</option>
+                    </select>
                 </div>
                 <div class="flex gap-4">
                     <label class="flex items-center gap-2 cursor-pointer">

@@ -19,6 +19,9 @@ Aplikasi PWA untuk mengelola jadwal dengan fitur CRUD, localStorage, dan alarm.
 - ✅ Alarm - Notifikasi 30 menit sebelum jadwal
 - ✅ Offline - Bisa digunakan tanpa internet
 - ✅ LocalStorage - Data tersimpan permanen
+- ✅ Jam - Waktu spesifik untuk setiap jadwal
+- ✅ WhatsApp - Link langsung ke chat WA
+- ✅ Invoice - Status lunas/belum lunas
 
 ## 📱 Cara Pakai
 
@@ -27,6 +30,17 @@ Aplikasi PWA untuk mengelola jadwal dengan fitur CRUD, localStorage, dan alarm.
 - **Hapus:** Klik tombol 🗑️ pada kartu jadwal
 - **Alarm:** Klik tombol 🔔 untuk lihat alarm aktif
 - **Kalender:** Klik tanggal untuk scroll ke jadwal
+- **WhatsApp:** Klik nomor WA untuk chat langsung
+
+## 📊 Data Jadwal
+
+Setiap jadwal memiliki:
+- Bulan & Tanggal
+- Waktu & Jam (contoh: Pagi - 08:00)
+- Lokasi
+- No. WhatsApp (klik untuk chat)
+- Status Invoice (Lunas/Belum Lunas)
+- Badge Makeup & Double
 
 ---
 

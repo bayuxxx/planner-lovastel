@@ -28,26 +28,11 @@ function saveSchedules(schedules) {
 function getDefaultData() {
     // Data default lengkap dari jadwal asli
     return [
-        { id: 1, m: 'Mei', d: '1', t: 'Pagi', l: 'Seteluk', make: true, dbl: false },
-        { id: 2, m: 'Mei', d: '2', t: 'Subuh', l: 'Seteluk', make: true, dbl: false },
-        { id: 3, m: 'Mei', d: '2', t: 'Sore', l: 'Seteluk', make: true, dbl: true },
-        { id: 4, m: 'Mei', d: '2', t: 'Sore', l: 'Benete', make: true, dbl: true },
-        { id: 5, m: 'Mei', d: '3', t: 'Subuh', l: 'Benete', make: true, dbl: false },
-        { id: 6, m: 'Mei', d: '3', t: 'Pagi', l: 'Seteluk', make: false, dbl: false },
-        { id: 7, m: 'Mei', d: '8', t: 'Sore', l: 'Taliwang', make: false, dbl: true },
-        { id: 8, m: 'Mei', d: '8', t: 'Sore', l: 'Taliwang', make: false, dbl: true },
-        { id: 9, m: 'Mei', d: '9', t: 'Subuh', l: 'Taliwang', make: false, dbl: false },
-        { id: 10, m: 'Mei', d: '10', t: 'Subuh', l: 'Seteluk', make: false, dbl: false },
-        { id: 11, m: 'Mei', d: '10', t: 'Pagi', l: 'Taliwang', make: false, dbl: false },
-        { id: 12, m: 'Mei', d: '11', t: 'Pagi', l: 'Tepas', make: false, dbl: false },
-        { id: 13, m: 'Mei', d: '15', t: 'Sore', l: 'Taliwang', make: true, dbl: false },
-        { id: 14, m: 'Mei', d: '16', t: 'Subuh', l: 'Taliwang', make: true, dbl: false },
-        { id: 15, m: 'Mei', d: '16', t: 'Sore', l: 'Taliwang', make: false, dbl: false },
-        { id: 16, m: 'Juni', d: '1', t: 'Subuh', l: 'Utan', make: true, dbl: false },
-        { id: 17, m: 'Juni', d: '3', t: 'Sore', l: 'Mura', make: true, dbl: false },
-        { id: 18, m: 'Juni', d: '5', t: 'Sore', l: 'Maluk', make: true, dbl: false },
-        { id: 19, m: 'Juli', d: '17', t: 'Sore', l: 'Sekongkang', make: true, dbl: false },
-        { id: 20, m: 'Juli', d: '18', t: 'Pagi', l: 'Taliwang', make: false, dbl: false }
+        { id: 1, m: 'Mei', d: '1', t: 'Pagi', jam: '08:00', l: 'Seteluk', wa: '081234567890', invoice: 'lunas', make: true, dbl: false },
+        { id: 2, m: 'Mei', d: '2', t: 'Subuh', jam: '04:30', l: 'Seteluk', wa: '081234567891', invoice: 'belum', make: true, dbl: false },
+        { id: 3, m: 'Mei', d: '2', t: 'Sore', jam: '16:00', l: 'Seteluk', wa: '081234567892', invoice: 'lunas', make: true, dbl: true },
+        { id: 4, m: 'Mei', d: '2', t: 'Sore', jam: '16:30', l: 'Benete', wa: '081234567893', invoice: 'lunas', make: true, dbl: true },
+        { id: 5, m: 'Mei', d: '3', t: 'Subuh', jam: '04:30', l: 'Benete', wa: '081234567894', invoice: 'belum', make: true, dbl: false }
     ];
 }
 
@@ -190,25 +175,36 @@ function renderSchedule(month) {
         let badges = '';
         if (job.make) badges += `<span class="bg-pink-100 text-pink-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">💄 Makeup</span>`;
         if (job.dbl) badges += `<span class="bg-orange-500 text-white text-[0.65rem] font-bold px-2 py-1 rounded-md shadow-sm">🔥 Double</span>`;
+        
+        // Status invoice
+        const invoiceStatus = job.invoice === 'lunas' 
+            ? `<span class="bg-green-100 text-green-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✓ Lunas</span>`
+            : `<span class="bg-red-100 text-red-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✗ Belum Lunas</span>`;
 
         card.innerHTML = `
-            <div class="glass-panel rounded-2xl p-4 flex gap-4 items-center border ${cardColor}">
+            <div class="glass-panel rounded-2xl p-4 flex gap-4 items-start border ${cardColor}">
                 <div class="w-14 h-14 shrink-0 rounded-2xl bg-white shadow-sm flex flex-col justify-center items-center">
                     <span class="text-[0.65rem] font-bold text-slate-400 uppercase">${job.m.slice(0, 3)}</span>
                     <span class="text-xl font-black text-slate-800 leading-tight">${job.d}</span>
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <h3 class="font-bold text-slate-800 capitalize text-lg">${job.l}</h3>
-                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1 mt-0.5">
-                        🕒 ${job.t}
-                    </p>
-                </div>
-                <div class="flex flex-col gap-1 items-end shrink-0">
-                    ${badges}
-                    <div class="flex gap-1 mt-2">
-                        <button data-edit-id="${job.id}" class="edit-btn w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 flex items-center justify-center transition">✏️</button>
-                        <button data-delete-id="${job.id}" class="delete-btn w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition">🗑️</button>
+                    <div class="flex flex-col gap-1 mt-1">
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1">
+                            🕒 ${job.t} ${job.jam ? `- ${job.jam}` : ''}
+                        </p>
+                        ${job.wa ? `<p class="text-xs font-semibold text-blue-600 flex items-center gap-1">
+                            � <a href="https://wa.me/${job.wa.replace(/\D/g, '')}" target="_blank" class="hover:underline">${job.wa}</a>
+                        </p>` : ''}
                     </div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                        ${badges}
+                        ${invoiceStatus}
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1 shrink-0">
+                    <button data-edit-id="${job.id}" class="edit-btn w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 flex items-center justify-center transition">✏️</button>
+                    <button data-delete-id="${job.id}" class="delete-btn w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition">🗑️</button>
                 </div>
             </div>
         `;
@@ -250,7 +246,10 @@ function editSchedule(id) {
     document.getElementById('inputMonth').value = schedule.m;
     document.getElementById('inputDay').value = schedule.d;
     document.getElementById('inputTime').value = schedule.t;
+    document.getElementById('inputJam').value = schedule.jam || '';
     document.getElementById('inputLocation').value = schedule.l;
+    document.getElementById('inputWA').value = schedule.wa || '';
+    document.getElementById('inputInvoice').value = schedule.invoice || 'belum';
     document.getElementById('inputMake').checked = schedule.make;
     document.getElementById('inputDouble').checked = schedule.dbl;
     document.getElementById('modal').classList.add('active');
@@ -273,7 +272,10 @@ function setupFormHandler() {
             m: document.getElementById('inputMonth').value,
             d: document.getElementById('inputDay').value,
             t: document.getElementById('inputTime').value,
+            jam: document.getElementById('inputJam').value,
             l: document.getElementById('inputLocation').value,
+            wa: document.getElementById('inputWA').value,
+            invoice: document.getElementById('inputInvoice').value,
             make: document.getElementById('inputMake').checked,
             dbl: document.getElementById('inputDouble').checked
         };
