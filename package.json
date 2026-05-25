@@ -1,0 +1,19 @@
+{
+  "name": "lovastel-planner-2026",
+  "version": "1.0.0",
+  "description": "Aplikasi PWA untuk mengelola jadwal Lovastel 2026",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "pwa",
+    "schedule",
+    "planner",
+    "calendar",
+    "lovastel"
+  ],
+  "author": "Lovastel Team",
+  "license": "MIT"
+}
