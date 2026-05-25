@@ -4,17 +4,14 @@
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 
-🚀 MULAI CEPAT (3 LANGKAH):
+🚀 MULAI CEPAT (2 LANGKAH):
 
 === OPSI A: DEPLOY KE VERCEL (RECOMMENDED) ===
 
 1. Install Vercel CLI
    → npm install -g vercel
 
-2. Generate Icon
-   → Buka: create-icons.html di browser
-
-3. Deploy
+2. Deploy (Icon SVG sudah included!)
    → vercel --prod
    → Aplikasi live dalam 2 menit!
 
@@ -22,17 +19,16 @@
 
 === OPSI B: JALANKAN LOKAL ===
 
-1. Generate Icon
-   → Buka: create-icons.html di browser
-   → Icon otomatis ter-download
-
-2. Jalankan Server
+1. Jalankan Server (Icon SVG sudah included!)
    Windows: Double-click start-server.bat
    Mac/Linux: ./start-server.sh
    Manual: python -m http.server 8000
 
-3. Buka Browser
+2. Buka Browser
    → http://localhost:8000
+
+Optional: Generate PNG icons untuk kompatibilitas maksimal
+   → Buka: generate-png-icons.html di browser
 
 ✨ FITUR UTAMA:
 

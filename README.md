@@ -17,13 +17,13 @@ Aplikasi Progressive Web App (PWA) untuk mengelola jadwal dengan fitur CRUD, loc
 
 ### Opsi A: Deploy ke Vercel (RECOMMENDED) ⚡
 
-**Deploy dalam 5 menit:**
+**Deploy langsung (tanpa setup icon):**
 
 ```bash
 # 1. Install Vercel CLI
 npm install -g vercel
 
-# 2. Deploy
+# 2. Deploy (SVG icon sudah included!)
 vercel --prod
 ```
 
@@ -34,12 +34,14 @@ vercel --prod
 
 📚 **Panduan lengkap:** `VERCEL-QUICKSTART.md` atau `DEPLOY-VERCEL.md`
 
+**Optional - Generate PNG icons untuk kompatibilitas maksimal:**
+- Buka `generate-png-icons.html` di browser
+- Icons otomatis ter-download
+- Simpan di root folder
+
 ### Opsi B: Jalankan Lokal
 
-#### 1. Generate Icon
-Buka `create-icons.html` di browser untuk generate icon PWA (icon-192.png dan icon-512.png)
-
-#### 2. Jalankan Server
+#### 1. Jalankan Server (Icon SVG sudah included!)
 ```bash
 # Windows
 start-server.bat
@@ -49,13 +51,10 @@ start-server.bat
 
 # Manual - Python
 python -m http.server 8000
-
-# Manual - Node.js
-npx serve
-
-# Manual - PHP
-php -S localhost:8000
 ```
+
+#### 2. Optional: Generate PNG Icons
+Buka `generate-png-icons.html` di browser untuk generate icon PNG (opsional, untuk kompatibilitas maksimal)
 
 #### 3. Install sebagai PWA
 - Di Chrome/Edge: Klik icon install di address bar
