@@ -59,9 +59,40 @@ function init() {
     renderFilters();
     updateView(activeMonth);
     setupFormHandler();
+    setupEventListeners();
     checkAlarms();
     requestNotificationPermission();
     setInterval(checkAlarms, 60000); // Check every minute
+}
+
+// Setup Event Listeners
+function setupEventListeners() {
+    // Add button
+    document.getElementById('addBtn').addEventListener('click', openAddModal);
+    
+    // Alarm button
+    document.getElementById('alarmBtn').addEventListener('click', toggleAlarmPanel);
+    
+    // Close alarm button
+    document.getElementById('closeAlarmBtn').addEventListener('click', toggleAlarmPanel);
+    
+    // Cancel button
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+    
+    // Event delegation for edit and delete buttons
+    document.addEventListener('click', (e) => {
+        // Edit button
+        if (e.target.closest('.edit-btn')) {
+            const id = parseInt(e.target.closest('.edit-btn').dataset.editId);
+            editSchedule(id);
+        }
+        
+        // Delete button
+        if (e.target.closest('.delete-btn')) {
+            const id = parseInt(e.target.closest('.delete-btn').dataset.deleteId);
+            deleteSchedule(id);
+        }
+    });
 }
 
 // Request notification permission
@@ -123,12 +154,17 @@ function renderCalendar(month) {
             'w-full aspect-square rounded-xl flex flex-col items-center justify-center cursor-pointer transition active:scale-95 bg-white shadow-sm border border-slate-100 hover:border-blue-300 text-slate-800 font-bold' : 
             'w-full aspect-square rounded-xl flex flex-col items-center justify-center text-slate-400 font-medium';
 
-        grid.innerHTML += `
-            <button class="${btnClass}" ${hasJob ? `onclick="scrollToJob('${month}-${day}')"` : ''}>
-                <span class="text-sm">${day}</span>
-                ${dotsHtml}
-            </button>
+        const btn = document.createElement('button');
+        btn.className = btnClass;
+        if (hasJob) {
+            btn.dataset.jobId = `${month}-${day}`;
+            btn.addEventListener('click', () => scrollToJob(`${month}-${day}`));
+        }
+        btn.innerHTML = `
+            <span class="text-sm">${day}</span>
+            ${dotsHtml}
         `;
+        grid.appendChild(btn);
     }
 }
 
@@ -170,8 +206,8 @@ function renderSchedule(month) {
                 <div class="flex flex-col gap-1 items-end shrink-0">
                     ${badges}
                     <div class="flex gap-1 mt-2">
-                        <button onclick="editSchedule(${job.id})" class="w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 flex items-center justify-center transition">✏️</button>
-                        <button onclick="deleteSchedule(${job.id})" class="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition">🗑️</button>
+                        <button data-edit-id="${job.id}" class="edit-btn w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 flex items-center justify-center transition">✏️</button>
+                        <button data-delete-id="${job.id}" class="delete-btn w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition">🗑️</button>
                     </div>
                 </div>
             </div>

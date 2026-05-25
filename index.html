@@ -47,8 +47,8 @@
                 <p class="text-slate-500 font-medium mt-1 text-sm" id="todayText">Tetap semangat! ✨</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="openAddModal()" class="w-10 h-10 rounded-full glass-panel flex justify-center items-center text-lg shadow-sm hover:scale-110 transition-transform active:scale-95">➕</button>
-                <button onclick="toggleAlarmPanel()" class="w-10 h-10 rounded-full glass-panel flex justify-center items-center text-lg shadow-sm hover:scale-110 transition-transform active:scale-95" id="alarmBtn">�</button>
+                <button id="addBtn" class="w-10 h-10 rounded-full glass-panel flex justify-center items-center text-lg shadow-sm hover:scale-110 transition-transform active:scale-95">➕</button>
+                <button id="alarmBtn" class="w-10 h-10 rounded-full glass-panel flex justify-center items-center text-lg shadow-sm hover:scale-110 transition-transform active:scale-95">🔔</button>
             </div>
         </header>
 
@@ -120,7 +120,7 @@
                     </label>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="closeModal()" class="flex-1 px-6 py-3 rounded-xl bg-slate-200 text-slate-700 font-bold hover:bg-slate-300 transition">Batal</button>
+                    <button type="button" id="cancelBtn" class="flex-1 px-6 py-3 rounded-xl bg-slate-200 text-slate-700 font-bold hover:bg-slate-300 transition">Batal</button>
                     <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-500 text-white font-bold hover:bg-blue-600 transition shadow-lg">Simpan</button>
                 </div>
             </form>
@@ -132,7 +132,7 @@
         <div class="glass-panel rounded-3xl p-6 max-w-md w-full shadow-2xl animate-scale-in max-h-[80vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-slate-900">🔔 Alarm Aktif</h2>
-                <button onclick="toggleAlarmPanel()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center font-bold">✕</button>
+                <button id="closeAlarmBtn" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center font-bold">✕</button>
             </div>
             <div id="alarmList" class="space-y-3"></div>
             <p class="text-xs text-slate-500 mt-4 text-center">Alarm akan berbunyi 30 menit sebelum jadwal</p>
