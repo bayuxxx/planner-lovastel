@@ -1,23 +1,10 @@
-# Icons (will be generated)
-icon-192.png
-icon-512.png
-
-# OS Files
-.DS_Store
-Thumbs.db
-desktop.ini
-
 # Editor
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
 
-# Logs
-*.log
-npm-debug.log*
+# OS
+.DS_Store
+Thumbs.db
 
-# Temporary
-*.tmp
-*.temp
+# Vercel
+.vercel

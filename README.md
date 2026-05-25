@@ -1,153 +1,32 @@
 # 📅 Lovastel Planner 2026
 
-Aplikasi Progressive Web App (PWA) untuk mengelola jadwal dengan fitur CRUD, localStorage, dan alarm notifikasi.
+Aplikasi PWA untuk mengelola jadwal dengan fitur CRUD, localStorage, dan alarm.
+
+## 🚀 Deploy ke Vercel (Manual Import)
+
+1. Push project ini ke GitHub
+2. Buka [vercel.com](https://vercel.com)
+3. Login dengan GitHub
+4. Klik **"Add New Project"**
+5. Import repository ini
+6. Klik **"Deploy"**
+7. Selesai! ✨
 
 ## ✨ Fitur
 
-- **📱 Progressive Web App (PWA)** - Install di perangkat dan gunakan offline
-- **💾 LocalStorage** - Data tersimpan di browser, tidak hilang saat refresh
-- **➕ CRUD Lengkap** - Create, Read, Update, Delete jadwal
-- **🔔 Alarm & Notifikasi** - Notifikasi otomatis 30 menit sebelum jadwal
-- **📆 Kalender Interaktif** - Klik tanggal untuk scroll ke jadwal
-- **🎨 UI Modern** - Desain glassmorphism dengan animasi smooth
-- **💄 Badge Khusus** - Makeup dan Double shift indicator
-- **📊 Filter Bulan** - Navigasi mudah antar bulan
+- ✅ PWA - Install sebagai aplikasi
+- ✅ CRUD - Tambah, Edit, Hapus jadwal
+- ✅ Alarm - Notifikasi 30 menit sebelum jadwal
+- ✅ Offline - Bisa digunakan tanpa internet
+- ✅ LocalStorage - Data tersimpan permanen
 
-## 🚀 Cara Menggunakan
+## 📱 Cara Pakai
 
-### Opsi A: Deploy ke Vercel (RECOMMENDED) ⚡
-
-**Deploy langsung (tanpa setup icon):**
-
-```bash
-# 1. Install Vercel CLI
-npm install -g vercel
-
-# 2. Deploy (SVG icon sudah included!)
-vercel --prod
-```
-
-**Atau via GitHub:**
-1. Push ke GitHub
-2. Import di [vercel.com](https://vercel.com)
-3. Deploy otomatis!
-
-📚 **Panduan lengkap:** `VERCEL-QUICKSTART.md` atau `DEPLOY-VERCEL.md`
-
-**Optional - Generate PNG icons untuk kompatibilitas maksimal:**
-- Buka `generate-png-icons.html` di browser
-- Icons otomatis ter-download
-- Simpan di root folder
-
-### Opsi B: Jalankan Lokal
-
-#### 1. Jalankan Server (Icon SVG sudah included!)
-```bash
-# Windows
-start-server.bat
-
-# Mac/Linux
-./start-server.sh
-
-# Manual - Python
-python -m http.server 8000
-```
-
-#### 2. Optional: Generate PNG Icons
-Buka `generate-png-icons.html` di browser untuk generate icon PNG (opsional, untuk kompatibilitas maksimal)
-
-#### 3. Install sebagai PWA
-- Di Chrome/Edge: Klik icon install di address bar
-- Di Mobile: Pilih "Add to Home Screen"
-
-## 📝 Cara Menggunakan Fitur
-
-### Tambah Jadwal
-1. Klik tombol ➕ di header
-2. Isi form (Bulan, Tanggal, Waktu, Lokasi)
-3. Centang Makeup/Double jika perlu
-4. Klik Simpan
-
-### Edit Jadwal
-1. Klik tombol ✏️ pada kartu jadwal
-2. Ubah data yang diperlukan
-3. Klik Simpan
-
-### Hapus Jadwal
-1. Klik tombol 🗑️ pada kartu jadwal
-2. Konfirmasi penghapusan
-
-### Alarm
-1. Klik tombol 🔔 untuk melihat alarm aktif
-2. Alarm akan berbunyi 30 menit sebelum jadwal
-3. Pastikan izinkan notifikasi di browser
-
-## 🗂️ Struktur File
-
-```
-├── index.html          # File HTML utama
-├── styles.css          # Styling dan animasi
-├── app.js              # Logic aplikasi (CRUD, Alarm)
-├── manifest.json       # PWA manifest
-├── sw.js               # Service Worker untuk offline
-├── vercel.json         # Vercel configuration
-├── package.json        # NPM package info
-├── create-icons.html   # Generator icon PWA
-├── icon-192.png        # Icon 192x192 (generate dulu)
-├── icon-512.png        # Icon 512x512 (generate dulu)
-├── README.md           # Dokumentasi
-├── VERCEL-QUICKSTART.md # Quick deploy guide
-├── DEPLOY-VERCEL.md    # Detailed deploy guide
-├── deploy.bat          # Windows deploy script
-└── deploy.sh           # Unix deploy script
-```
-
-## 🎨 Teknologi
-
-- **HTML5** - Struktur aplikasi
-- **CSS3** - Styling dengan Tailwind CSS
-- **JavaScript (Vanilla)** - Logic tanpa framework
-- **LocalStorage API** - Penyimpanan data
-- **Service Worker** - Offline capability
-- **Notification API** - Push notification
-- **PWA** - Progressive Web App
-
-## 📱 Browser Support
-
-- Chrome/Edge (Recommended)
-- Firefox
-- Safari (iOS 11.3+)
-- Opera
-
-## 💡 Tips
-
-- Data tersimpan di localStorage browser
-- Backup data dengan export/import (fitur bisa ditambahkan)
-- Izinkan notifikasi untuk fitur alarm
-- Install sebagai PWA untuk pengalaman terbaik
-
-## 🔧 Kustomisasi
-
-### Ubah Waktu Alarm
-Edit di `app.js` baris:
-```javascript
-return timeDiff > 0 && timeDiff <= 30; // 30 menit sebelum
-```
-
-### Tambah Bulan Baru
-Edit di `app.js`:
-```javascript
-const calendarSetup = {
-    'Desember': { days: 31, startDay: 2 } // Tambahkan bulan baru
-};
-```
-
-### Ubah Warna Tema
-Edit di `styles.css` atau Tailwind config di `index.html`
-
-## 📄 Lisensi
-
-Free to use - Lovastel Planner 2026
+- **Tambah:** Klik tombol ➕
+- **Edit:** Klik tombol ✏️ pada kartu jadwal
+- **Hapus:** Klik tombol 🗑️ pada kartu jadwal
+- **Alarm:** Klik tombol 🔔 untuk lihat alarm aktif
+- **Kalender:** Klik tanggal untuk scroll ke jadwal
 
 ---
 
