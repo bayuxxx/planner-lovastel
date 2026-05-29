@@ -15,7 +15,7 @@ export default function App() {
   const audioRef = useRef(new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXvzn0pBSh+zPDajzsKElyx6OyrWBUIQ5zd8sFuJAUuhM/z24k2CBhku+zooVARC0yl4fG5ZRwFNo3V7859KQUofsz'));
   
   const [formData, setFormData] = useState({
-    m: 'Mei', d: '', jam: '', l: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false
+    m: 'Mei', d: '', jam: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
   });
 
   const jobRefs = useRef({});
@@ -71,7 +71,7 @@ export default function App() {
   const handleOpenAddModal = () => {
     setEditingId(null);
     setFormData({
-        m: activeMonth, d: '', jam: '', l: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false
+        m: activeMonth, d: '', jam: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
     });
     setIsModalOpen(true);
   };
@@ -81,7 +81,7 @@ export default function App() {
     if (!schedule) return;
     setEditingId(id);
     setFormData({
-        m: schedule.m, d: schedule.d, jam: schedule.jam || '', l: schedule.l, customer: schedule.customer || '', wa: schedule.wa || '', invoice: schedule.invoice || 'belum', make: schedule.make || false, dbl: schedule.dbl || false, acara: schedule.acara || 'Akad', customAcara: schedule.customAcara || '', sewaGaun: schedule.sewaGaun || false, sewaAttire: schedule.sewaAttire || false
+        m: schedule.m, d: schedule.d, jam: schedule.jam || '', l: schedule.l, locationLink: schedule.locationLink || '', customer: schedule.customer || '', wa: schedule.wa || '', invoice: schedule.invoice || 'belum', make: schedule.make || false, dbl: schedule.dbl || false, acara: schedule.acara || 'Akad', customAcara: schedule.customAcara || '', sewaGaun: schedule.sewaGaun || false, sewaAttire: schedule.sewaAttire || false, totalPrice: schedule.totalPrice || ''
     });
     setIsModalOpen(true);
   };
@@ -240,6 +240,16 @@ export default function App() {
                                                 📱 <a href={`https://wa.me/${job.wa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="hover:underline">{job.wa}</a>
                                             </p>
                                         )}
+                                        {job.locationLink && isAdmin && (
+                                            <a href={job.locationLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 mt-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 w-full border border-red-100">
+                                                📍 Buka Lokasi (Google Maps)
+                                            </a>
+                                        )}
+                                        {job.totalPrice && isAdmin && (
+                                            <p className="text-xs font-semibold text-green-600 flex items-center gap-1">
+                                                💰 Rp {parseInt(job.totalPrice).toLocaleString('id-ID')}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="flex flex-wrap gap-1 mt-2">
                                         {job.acara && <span className="bg-purple-100 text-purple-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">🎪 {job.acara === 'Custom' ? job.customAcara : job.acara}</span>}
@@ -322,6 +332,14 @@ export default function App() {
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2">Lokasi</label>
                                 <input type="text" value={formData.l} onChange={e => setFormData({...formData, l: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" required />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Link Lokasi (Google Maps dll)</label>
+                                <input type="url" value={formData.locationLink} onChange={e => setFormData({...formData, locationLink: e.target.value})} placeholder="https://maps.google.com/..." className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Total Harga</label>
+                                <input type="number" value={formData.totalPrice} onChange={e => setFormData({...formData, totalPrice: e.target.value})} placeholder="Contoh: 1500000" className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" />
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2">Nama Pemesan</label>

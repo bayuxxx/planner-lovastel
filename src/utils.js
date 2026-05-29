@@ -26,6 +26,8 @@ export function printInvoice(job) {
     if (job.l) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Lokasi: ${job.l}</span>`;
     if (job.jam) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Jam: ${job.jam}</span>`;
 
+    const formattedPrice = job.totalPrice ? 'Rp ' + parseInt(job.totalPrice).toLocaleString('id-ID') : '-';
+
     w.document.write(`
         <!DOCTYPE html>
         <html>
@@ -393,9 +395,9 @@ export function printInvoice(job) {
                                     <td class="desc">
                                         ${descriptionHtml}
                                     </td>
-                                    <td>-</td>
+                                    <td>${formattedPrice}</td>
                                     <td>1 Package</td>
-                                    <td>-</td>
+                                    <td>${formattedPrice}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -415,7 +417,7 @@ export function printInvoice(job) {
                             </table>
                             <div class="total-box">
                                 <div class="total-label">TOTAL</div>
-                                <div class="total-amount">-</div>
+                                <div class="total-amount">${formattedPrice}</div>
                             </div>
                         </div>
                     </div>
