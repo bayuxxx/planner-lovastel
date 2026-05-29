@@ -240,7 +240,7 @@ export default function App() {
                                                 📱 <a href={`https://wa.me/${job.wa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="hover:underline">{job.wa}</a>
                                             </p>
                                         )}
-                                        {job.locationLink && isAdmin && (
+                                        {job.locationLink && (
                                             <a href={job.locationLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 mt-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 w-full border border-red-100">
                                                 📍 Buka Lokasi (Google Maps)
                                             </a>
