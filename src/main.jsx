@@ -9,13 +9,13 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Otomatis refresh jika ada versi baru (bersihkan cache lama)
+// Paksa hapus Service Worker (cache) lama
 if ('serviceWorker' in navigator) {
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      refreshing = true;
-      window.location.reload();
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      registration.unregister().then(() => {
+        console.log('Service Worker unregistered to clear cache.');
+      });
     }
   });
 }
