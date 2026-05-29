@@ -22,6 +22,11 @@ export default defineConfig({
             type: 'image/svg+xml'
           }
         ]
+      },
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true
       }
     })
   ],
