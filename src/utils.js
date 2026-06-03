@@ -6,10 +6,8 @@ export function getTimeInMinutes(timeStr) {
     return h * 60 + m;
 }
 
-export function printInvoice(job) {
-    const w = window.open('', '_blank');
-    
-    const monthIndex = months.indexOf(job.m) + 5; // Mei = 5, Juni = 6, dst (for 2026 starting in May)
+export function getInvoiceHTML(job, isPdf = false) {
+    const monthIndex = months.indexOf(job.m) + 5; // Mei = 5, Juni = 6, dst
     const monthFormatted = monthIndex < 10 ? `0${monthIndex}` : monthIndex;
     const dateStr = `${job.d.toString().padStart(2, '0')}/${monthFormatted}/2026`;
     const billingNo = `${job.id}/LVST/2026`;
@@ -21,18 +19,20 @@ export function printInvoice(job) {
     if (job.sewaGaun) services.push('Sewa Gaun');
     if (job.sewaAttire) services.push('Sewa Attire');
     
-    // Add additional info like location or time if needed, but the design mostly lists services.
     let descriptionHtml = services.join('<br/>');
     if (job.l) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Lokasi: ${job.l}</span>`;
-    if (job.jam) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Jam: ${job.jam}</span>`;
+    if (job.jam) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Jam Acara: ${job.jam}</span>`;
+    if (job.jamBerangkat) descriptionHtml += `<br/><span style="font-size: 11px; color: #777;">Jam Berangkat: ${job.jamBerangkat}</span>`;
 
     const formattedPrice = job.totalPrice ? 'Rp ' + parseInt(job.totalPrice).toLocaleString('id-ID') : '-';
+    const cleanCustomerName = (job.customer || 'Customer').replace(/[^a-zA-Z0-9 ]/g, '');
 
-    w.document.write(`
+    return `
         <!DOCTYPE html>
         <html>
             <head>
                 <title>Invoice - ${job.customer || 'Customer'}</title>
+                ${isPdf ? `<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>` : ''}
                 <style>
                     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Great+Vibes&family=Montserrat:wght@400;600;700&display=swap');
                     
@@ -325,11 +325,20 @@ export function printInvoice(job) {
                         letter-spacing: 5px;
                         font-family: 'Playfair Display', serif;
                     }
+                    
+                    ${isPdf ? `
+                    .print-btn { display: none !important; }
+                    /* Fix for html2pdf page break and scaling */
+                    html, body {
+                        width: 210mm;
+                        height: 297mm;
+                    }
+                    ` : ''}
                 </style>
             </head>
             <body>
-                <button class="print-btn" onclick="window.print()">Cetak Invoice</button>
-                <div class="invoice-wrapper">
+                ${!isPdf ? `<button class="print-btn" onclick="window.print()">Cetak Invoice</button>` : ''}
+                <div class="invoice-wrapper" id="invoice">
                     <div class="social-footer">
                         <div class="social-item">
                             <div class="social-icon">📱</div>
@@ -422,13 +431,67 @@ export function printInvoice(job) {
                         </div>
                     </div>
                 </div>
+                ${!isPdf ? `
                 <script>
                     window.onload = function() {
                         setTimeout(() => window.print(), 500);
                     }
                 </script>
+                ` : `
+                <script>
+                    window.onload = function() {
+                        const element = document.getElementById('invoice');
+                        const opt = {
+                            margin:       0,
+                            filename:     'Invoice_${cleanCustomerName}.pdf',
+                            image:        { type: 'jpeg', quality: 0.98 },
+                            html2canvas:  { scale: 2, useCORS: true },
+                            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        };
+                        
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.id = 'loading';
+                        loadingDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:sans-serif;font-size:24px;font-weight:bold;color:#4a3b52;background:rgba(255,255,255,0.9);padding:20px;border-radius:10px;z-index:9999;';
+                        loadingDiv.innerText = 'Menghasilkan PDF...';
+                        document.body.appendChild(loadingDiv);
+                        
+                        // Wait slightly for fonts
+                        setTimeout(() => {
+                            html2pdf().set(opt).from(element).output('blob').then(function(blob) {
+                                var file = new File([blob], 'Invoice_${cleanCustomerName}.pdf', { type: 'application/pdf' });
+                                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                                    navigator.share({
+                                        title: 'Invoice ${cleanCustomerName}',
+                                        files: [file]
+                                    }).then(() => {
+                                        window.close();
+                                    }).catch((error) => {
+                                        console.error('Share failed', error);
+                                        loadingDiv.innerText = 'Mengunduh PDF...';
+                                        html2pdf().set(opt).from(element).save().then(() => window.close());
+                                    });
+                                } else {
+                                    loadingDiv.innerText = 'Mengunduh PDF...';
+                                    html2pdf().set(opt).from(element).save().then(() => window.close());
+                                }
+                            });
+                        }, 500);
+                    }
+                </script>
+                `}
             </body>
         </html>
-    `);
+    `;
+}
+
+export function printInvoice(job) {
+    const w = window.open('', '_blank');
+    w.document.write(getInvoiceHTML(job, false));
+    w.document.close();
+}
+
+export function shareToPdf(job) {
+    const w = window.open('', '_blank');
+    w.document.write(getInvoiceHTML(job, true));
     w.document.close();
 }

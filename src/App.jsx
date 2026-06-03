@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSchedules, saveSchedules } from './store';
 import { calendarSetup, months } from './config';
-import { getTimeInMinutes, printInvoice } from './utils';
+import { getTimeInMinutes, printInvoice, shareToPdf } from './utils';
 
 export default function App() {
   const [activeMonth, setActiveMonth] = useState('Mei');
@@ -15,7 +15,7 @@ export default function App() {
   const audioRef = useRef(new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXvzn0pBSh+zPDajzsKElyx6OyrWBUIQ5zd8sFuJAUuhM/z24k2CBhku+zooVARC0yl4fG5ZRwFNo3V7859KQUofsz'));
   
   const [formData, setFormData] = useState({
-    m: 'Mei', d: '', jam: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
+    m: 'Mei', d: '', jam: '', jamBerangkat: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
   });
 
   const jobRefs = useRef({});
@@ -39,7 +39,8 @@ export default function App() {
             if (s.m !== currentMonth) return false;
             if (parseInt(s.d) !== currentDay) return false;
             
-            const scheduleMinutes = getTimeInMinutes(s.jam);
+            const triggerTime = s.jamBerangkat || s.jam;
+            const scheduleMinutes = getTimeInMinutes(triggerTime);
             const timeDiff = scheduleMinutes - currentMinutes;
             
             return timeDiff > 0 && timeDiff <= 30;
@@ -71,7 +72,7 @@ export default function App() {
   const handleOpenAddModal = () => {
     setEditingId(null);
     setFormData({
-        m: activeMonth, d: '', jam: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
+        m: activeMonth, d: '', jam: '', jamBerangkat: '', l: '', locationLink: '', customer: '', wa: '', invoice: 'belum', make: false, dbl: false, acara: 'Akad', customAcara: '', sewaGaun: false, sewaAttire: false, totalPrice: ''
     });
     setIsModalOpen(true);
   };
@@ -81,7 +82,7 @@ export default function App() {
     if (!schedule) return;
     setEditingId(id);
     setFormData({
-        m: schedule.m, d: schedule.d, jam: schedule.jam || '', l: schedule.l, locationLink: schedule.locationLink || '', customer: schedule.customer || '', wa: schedule.wa || '', invoice: schedule.invoice || 'belum', make: schedule.make || false, dbl: schedule.dbl || false, acara: schedule.acara || 'Akad', customAcara: schedule.customAcara || '', sewaGaun: schedule.sewaGaun || false, sewaAttire: schedule.sewaAttire || false, totalPrice: schedule.totalPrice || ''
+        m: schedule.m, d: schedule.d, jam: schedule.jam || '', jamBerangkat: schedule.jamBerangkat || '', l: schedule.l, locationLink: schedule.locationLink || '', customer: schedule.customer || '', wa: schedule.wa || '', invoice: schedule.invoice || 'belum', make: schedule.make || false, dbl: schedule.dbl || false, acara: schedule.acara || 'Akad', customAcara: schedule.customAcara || '', sewaGaun: schedule.sewaGaun || false, sewaAttire: schedule.sewaAttire || false, totalPrice: schedule.totalPrice || ''
     });
     setIsModalOpen(true);
   };
@@ -232,15 +233,16 @@ export default function App() {
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-slate-800 capitalize text-lg">{job.customer ? `${job.customer} - ` : ''}{job.l}</h3>
                                     <div className="flex flex-col gap-1 mt-1">
-                                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide flex items-center gap-1">
-                                            🕒 Jam {job.jam || '-'}
-                                        </p>
+                                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide flex flex-col gap-0.5">
+                                            <span>🕒 Acara: {job.jam || '-'}</span>
+                                            {job.jamBerangkat && <span>🚗 Berangkat: {job.jamBerangkat}</span>}
+                                        </div>
                                         {job.wa && isAdmin && (
                                             <p className="text-xs font-semibold text-blue-600 flex items-center gap-1">
                                                 📱 <a href={`https://wa.me/${job.wa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="hover:underline">{job.wa}</a>
                                             </p>
                                         )}
-                                        {job.locationLink && (
+                                        {job.locationLink && isAdmin && (
                                             <a href={job.locationLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 mt-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 w-full border border-red-100">
                                                 📍 Buka Lokasi (Google Maps)
                                             </a>
@@ -257,17 +259,20 @@ export default function App() {
                                         {job.dbl && <span className="bg-orange-500 text-white text-[0.65rem] font-bold px-2 py-1 rounded-md shadow-sm">🔥 Double Job</span>}
                                         {job.sewaGaun && <span className="bg-blue-100 text-blue-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">👗 Sewa Gaun</span>}
                                         {job.sewaAttire && <span className="bg-indigo-100 text-indigo-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">👔 Sewa Attire</span>}
-                                        {job.invoice === 'lunas' ? (
-                                            <span className="bg-green-100 text-green-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✓ Lunas</span>
-                                        ) : (
-                                            <span className="bg-red-100 text-red-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✗ Belum Lunas</span>
+                                        {isAdmin && (
+                                            job.invoice === 'lunas' ? (
+                                                <span className="bg-green-100 text-green-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✓ Lunas</span>
+                                            ) : (
+                                                <span className="bg-red-100 text-red-700 text-[0.65rem] font-bold px-2 py-1 rounded-md">✗ Belum Lunas</span>
+                                            )
                                         )}
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-1 shrink-0">
-                                    <button onClick={() => printInvoice(job)} className="w-8 h-8 rounded-lg bg-green-100 hover:bg-green-200 text-green-600 flex items-center justify-center transition" title="Print Invoice">🖨️</button>
                                     {isAdmin && (
                                         <>
+                                            <button onClick={() => printInvoice(job)} className="w-8 h-8 rounded-lg bg-green-100 hover:bg-green-200 text-green-600 flex items-center justify-center transition" title="Print Invoice">🖨️</button>
+                                            <button onClick={() => shareToPdf(job)} className="w-8 h-8 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-600 flex items-center justify-center transition" title="Share to PDF">📄</button>
                                             <button onClick={() => handleEdit(job.id)} className="w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 flex items-center justify-center transition" title="Edit">✏️</button>
                                             <button onClick={() => handleDelete(job.id)} className="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition" title="Delete">🗑️</button>
                                         </>
@@ -298,7 +303,7 @@ export default function App() {
                                 <input type="number" min="1" max="31" value={formData.d} onChange={e => setFormData({...formData, d: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" required />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Jam (Format 24 Jam)</label>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Jam Acara (Format 24 Jam)</label>
                                 <input 
                                     type="text" 
                                     placeholder="08:30" 
@@ -313,6 +318,23 @@ export default function App() {
                                     }} 
                                     className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" 
                                     required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-slate-700 mb-2">Jam Berangkat (Format 24 Jam)</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="07:30" 
+                                    pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+                                    title="Gunakan format 24 jam, contoh: 14:30"
+                                    value={formData.jamBerangkat} 
+                                    onChange={e => {
+                                        let v = e.target.value.replace(/\D/g, '');
+                                        if (v.length > 4) v = v.slice(0, 4);
+                                        if (v.length > 2) v = v.slice(0, 2) + ':' + v.slice(2);
+                                        setFormData({...formData, jamBerangkat: v});
+                                    }} 
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 outline-none transition" 
                                 />
                             </div>
                             <div>
@@ -440,13 +462,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
