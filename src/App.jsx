@@ -31,28 +31,37 @@ export default function App() {
   useEffect(() => {
     const checkAlarms = () => {
         const now = new Date();
-        const currentMonth = months[now.getMonth()];
-        const currentDay = now.getDate();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const monthMap = { 'Januari': 0, 'Februari': 1, 'Maret': 2, 'April': 3, 'Mei': 4, 'Juni': 5, 'Juli': 6, 'Agustus': 7, 'September': 8, 'Oktober': 9, 'November': 10, 'Desember': 11 };
+        
+        let upcomingAlarms = [];
 
-        const upcomingSchedules = schedules.filter(s => {
-            if (s.m !== currentMonth) return false;
-            if (parseInt(s.d) !== currentDay) return false;
+        schedules.forEach(schedule => {
+            const eventMonth = monthMap[schedule.m];
+            if (eventMonth === undefined) return;
             
-            const triggerTime = s.jamBerangkat || s.jam;
-            const scheduleMinutes = getTimeInMinutes(triggerTime);
-            const timeDiff = scheduleMinutes - currentMinutes;
+            const triggerTime = schedule.jamBerangkat || schedule.jam;
+            if (!triggerTime) return;
+
+            const [hours, minutes] = triggerTime.split(':').map(Number);
+            const eventDate = new Date(2026, eventMonth, parseInt(schedule.d), hours, minutes);
             
-            return timeDiff > 0 && timeDiff <= 30;
+            const timeDiffMinutes = Math.floor((eventDate.getTime() - now.getTime()) / 60000);
+
+            if (timeDiffMinutes >= 0 && timeDiffMinutes <= 30) {
+                upcomingAlarms.push({ ...schedule, alarmType: '30m', eventTimeMs: eventDate.getTime() });
+            } else if (timeDiffMinutes >= (24 * 60 - 30) && timeDiffMinutes <= (24 * 60)) {
+                upcomingAlarms.push({ ...schedule, alarmType: '1d', eventTimeMs: eventDate.getTime() });
+            }
         });
 
-        setAlarms(upcomingSchedules);
+        setAlarms(upcomingAlarms);
         
-        upcomingSchedules.forEach(schedule => {
-            const alarmKey = `alarm-${schedule.id}-${currentDay}`;
+        upcomingAlarms.forEach(schedule => {
+            const alarmKey = `alarm-${schedule.alarmType}-${schedule.id}-${schedule.eventTimeMs}`;
             if (!sessionStorage.getItem(alarmKey)) {
                 if ('Notification' in window && Notification.permission === 'granted') {
-                    new Notification('🔔 Jadwal Segera Dimulai!', {
+                    const title = schedule.alarmType === '1d' ? '🔔 H-1 Jadwal Besok!' : '🔔 Jadwal Segera Dimulai!';
+                    new Notification(title, {
                         body: `Jam ${schedule.jam} - ${schedule.l}`,
                         icon: '/favicon.svg'
                     });
@@ -127,7 +136,7 @@ export default function App() {
     } else {
         Notification.requestPermission();
     }
-    setActiveRingingAlarm({ id: 'test', jam: '08:00', l: 'Test Alarm', m: activeMonth, d: '1' });
+    setActiveRingingAlarm({ id: 'test', jam: '08:00', l: 'Test Alarm', m: activeMonth, d: '1', alarmType: '30m' });
     audioRef.current.play().catch(() => alert('Browser memblokir suara otomatis, izinkan suara berjalan di situs ini.'));
   };
 
@@ -237,16 +246,18 @@ export default function App() {
                                             <span>🕒 Acara: {job.jam || '-'}</span>
                                             {job.jamBerangkat && <span>🚗 Berangkat: {job.jamBerangkat}</span>}
                                         </div>
-                                        {job.wa && isAdmin && (
-                                            <p className="text-xs font-semibold text-blue-600 flex items-center gap-1">
-                                                📱 <a href={`https://wa.me/${job.wa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="hover:underline">{job.wa}</a>
-                                            </p>
-                                        )}
-                                        {job.locationLink && isAdmin && (
-                                            <a href={job.locationLink} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 mt-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95 w-full border border-red-100">
-                                                📍 Buka Lokasi (Google Maps)
-                                            </a>
-                                        )}
+                                        <div className="flex gap-2 mt-1">
+                                            {job.wa && isAdmin && (
+                                                <a href={`https://wa.me/${job.wa.replace(/\D/g, '').replace(/^0/, '62')}`} target="_blank" rel="noreferrer" className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-[0.7rem] sm:text-xs font-bold transition-all shadow-sm active:scale-95 border border-green-200 whitespace-nowrap overflow-hidden">
+                                                    💬 {job.wa}
+                                                </a>
+                                            )}
+                                            {job.locationLink && isAdmin && (
+                                                <a href={job.locationLink} target="_blank" rel="noreferrer" className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[0.7rem] sm:text-xs font-bold transition-all shadow-sm active:scale-95 border border-red-200 whitespace-nowrap overflow-hidden">
+                                                    📍 Lokasi
+                                                </a>
+                                            )}
+                                        </div>
                                         {job.totalPrice && isAdmin && (
                                             <p className="text-xs font-semibold text-green-600 flex items-center gap-1">
                                                 💰 Rp {parseInt(job.totalPrice).toLocaleString('id-ID')}
@@ -418,12 +429,12 @@ export default function App() {
                         {alarms.length === 0 ? (
                             <p className="text-center text-slate-500 py-4">Tidak ada alarm aktif</p>
                         ) : (
-                            alarms.map(s => (
-                                <div key={s.id} className="glass-panel rounded-xl p-3 border border-blue-200 bg-blue-50/50">
+                            alarms.map((s, idx) => (
+                                <div key={`${s.id}-${idx}`} className="glass-panel rounded-xl p-3 border border-blue-200 bg-blue-50/50">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-blue-500 text-white flex items-center justify-center font-bold">{s.d}</div>
+                                        <div className={`w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold ${s.alarmType === '1d' ? 'bg-orange-500' : 'bg-blue-500'}`}>{s.d}</div>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-slate-800">{s.l}</h4>
+                                            <h4 className="font-bold text-slate-800">{s.l} {s.alarmType === '1d' ? '(Besok)' : ''}</h4>
                                             <p className="text-xs text-slate-600">🕒 Jam {s.jam || '-'}</p>
                                         </div>
                                         <span className="text-2xl">🔔</span>
@@ -437,24 +448,24 @@ export default function App() {
                             <span>🧪</span> Uji Coba Alarm & Notifikasi
                         </button>
                     </div>
-                    <p className="text-xs text-slate-500 mt-4 text-center shrink-0">Alarm akan berbunyi 30 menit sebelum jadwal</p>
+                    <p className="text-xs text-slate-500 mt-4 text-center shrink-0">Alarm akan berbunyi H-1 dan 30 menit sebelum jadwal</p>
                 </div>
             </div>
         )}
 
         {/* Ringing Alarm Overlay */}
         {activeRingingAlarm && (
-            <div className="fixed inset-0 bg-red-500/90 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 animate-scale-in">
+            <div className={`fixed inset-0 backdrop-blur-md z-[100] flex flex-col items-center justify-center p-6 animate-scale-in ${activeRingingAlarm.alarmType === '1d' ? 'bg-orange-500/90' : 'bg-red-500/90'}`}>
                 <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-6xl shadow-2xl animate-bounce mb-8">
                     🔔
                 </div>
                 <h1 className="text-4xl font-black text-white text-center mb-2 drop-shadow-md">
-                    WAKTUNYA JADWAL!
+                    {activeRingingAlarm.alarmType === '1d' ? 'H-1 JADWAL BESOK!' : 'WAKTUNYA JADWAL!'}
                 </h1>
                 <p className="text-xl text-white/90 text-center font-bold mb-12 drop-shadow-sm">
-                    Jam {activeRingingAlarm.jam} di {activeRingingAlarm.l}
+                    {activeRingingAlarm.alarmType === '1d' ? 'Besok' : 'Hari ini'} jam {activeRingingAlarm.jam} di {activeRingingAlarm.l}
                 </p>
-                <button onClick={stopRinging} className="px-10 py-5 rounded-full bg-white text-red-600 text-2xl font-black shadow-2xl hover:scale-110 active:scale-95 transition-transform uppercase tracking-widest">
+                <button onClick={stopRinging} className={`px-10 py-5 rounded-full bg-white text-2xl font-black shadow-2xl hover:scale-110 active:scale-95 transition-transform uppercase tracking-widest ${activeRingingAlarm.alarmType === '1d' ? 'text-orange-600' : 'text-red-600'}`}>
                     Matikan Alarm
                 </button>
             </div>
